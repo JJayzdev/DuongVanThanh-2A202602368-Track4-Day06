@@ -1,4 +1,4 @@
-# Báo cáo Day 6: [ĐIỀN tên đề tài ngắn]
+# Báo cáo Day 6: Stress Test Suy Giảm Cảm Biến LiDAR và Đánh Giá Ngưỡng Suy Sụp Nhận Diện 3D
 
 > Thay **mọi** ô có chữ ĐIỀN nằm trong ngoặc vuông bằng nội dung của bạn, xoá luôn cả dấu ngoặc vuông. Lệnh `python tools/check_submission.py` sẽ báo FAIL nếu còn sót bất kỳ chỗ nào.
 
@@ -6,17 +6,15 @@
 - **MSSV:** 2A202602368
 - **Lớp:** K4 Track 4
 - **Link repo:** https://github.com/JJayzdev/DuongVanThanh-2A202602368-Track4-Day06
-- **Topic:** [ĐIỀN một chữ cái A/B/C/D/E/F] — [ĐIỀN tên topic]
-- **Dataset:** [ĐIỀN một hoặc nhiều trong: data/synthetic, data/kitti_mini, data/nuscenes_mini_subset, log riêng]
-- **Các frame đã dùng:** [ĐIỀN danh sách frame id, ví dụ 000011, 000049 hoặc scene-0103_010]
+- **Topic:** C — Sensor degradation stress test
+- **Dataset:** data/kitti_mini, data/synthetic
+- **Các frame đã dùng:** 000001, 000010, 000011, 000021, 000049
 
 > Hãy viết ngắn: mỗi mục từ 3 đến 8 dòng, ưu tiên số liệu và hình ảnh.
 
 ## 1. Claim
 
-Một câu khẳng định kỹ thuật có thể kiểm chứng. Ví dụ: *"Lệch yaw 1° làm 12% điểm LiDAR rơi ra khỏi vật thể ở 30 m, phát hiện được bằng edge-alignment score với ngưỡng X."*
-
-[ĐIỀN]
+Khi LiDAR bị suy giảm do giảm độ phân giải chùm tia (beam dropout xuống 16–8 tia tương đương) hoặc thời tiết bất lợi (random dropout giữ lại <= 30%, range cutoff < 25 m), số điểm phản xạ trên người đi bộ ở khoảng cách > 14 m giảm hơn 70% (xuống dưới ngưỡng tối thiểu 10 điểm để model phát hiện tin cậy), làm tỷ lệ vật thể bị đói điểm (starvation rate) tăng vọt từ 12.5% lên 44.0% - 73.6%.
 
 ## 2. Evidence
 
