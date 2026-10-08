@@ -42,17 +42,24 @@ Dữ liệu chi tiết lưu tại `results/degradation_sweep.csv` và bảng t�
 
 ## 3. Failure case
 
-Nêu khi nào hệ thống hoặc phương pháp fail, vì sao fail, và liên hệ tới lớp nào trong 6 lớp debug: I/O, Geometry, Time, Preprocess, Model, Metric.
+![failure](../results/figures/fail_01_pedestrian_starvation.png)
 
-![failure](../results/figures/fail_[ĐIỀN].png)
-
-[ĐIỀN]
+- **Trường hợp:** KITTI, frame `000011`, đối tượng người đi bộ (Pedestrian #1) ở khoảng cách 14.5 m khi độ phân giải LiDAR suy giảm do hạ số tia (Beam Dropout từ 64 tia xuống 16 và 8 tia).
+- **Quan sát:** Ở mốc chuẩn 64 beams, người đi bộ nhận được 35 điểm phản xạ bao phủ đồng đều dọc theo cơ thể (đủ điều kiện nhận diện tin cậy). Khi bị suy giảm xuống 16 beams (tương đương giữ 1/4 số tia), số điểm giảm tới 82.9% xuống chỉ còn 6 điểm. Khi hạ xuống 8 beams, số điểm chỉ còn 4 điểm. Các điểm này nằm rời rạc trên ảnh và không còn cấu trúc hình học 3D của thân người.
+- **Nguyên nhân:** Lỗi phân giải hình học (Geometry) và cảm biến (Sensor resolution). Do góc phân giải đứng (vertical angular resolution) giãn rộng gấp 4 lần (từ ~0.4° lên ~1.6°), khoảng cách giữa hai chùm tia kế tiếp tại khoảng cách 14.5 m là $\Delta z \approx 14.5 \times \tan(1.6^\circ) \approx 0.41\text{ m}$. Với một người đi bộ có bề ngang chỉ ~0.6 m và chiều cao ~1.7 m, chỉ có 1–2 tia laser chạm vào cơ thể, phần lớn xung laser đi xuyên qua khoảng trống, dẫn đến hiện tượng "đói điểm" (point starvation).
+- **Lớp debug:** Geometry & Preprocess (Sụt giảm mật độ hình học khiến bước trích xuất đặc trưng điểm/voxel của mô hình 3D detector bị sụp đổ hoàn toàn).
+- **Cách phát hiện khi chạy thật:** Giám sát liên tục chỉ số mật độ điểm theo góc quét (point density per solid angle) và theo dõi số điểm trên từng cụm phân cụm sơ bộ. Nếu cụm vật thể nghi vấn ở khoảng cách < 30 m có số điểm $< 10$, hệ thống tự động kích hoạt cờ cảnh báo suy thoái cảm biến (Sensor Degradation Alert).
 
 ## 4. Khuyến nghị nếu triển khai thật
 
-Use-case cụ thể (ADAS / robot / drone), trade-off và bước tiếp theo.
-
-[ĐIỀN]
+- **Use-case cụ thể:** Hệ thống phanh khẩn cấp tự động đô thị (Urban AEB / ADAS Cấp độ 2+/3) và Robot giao hàng tự hành (Autonomous Last-mile Delivery Robot) hoạt động trong môi trường hỗn hợp có nhiều người đi bộ.
+- **Đánh đổi khi triển khai (Trade-offs):**
+  - *LiDAR rẻ tiền (16 beams) vs LiDAR cao cấp (64–128 beams):* Tiết kiệm 70% chi phí phần cứng nhưng đánh đổi bằng việc mất khả năng phát hiện người đi bộ ở khoảng cách trên 15 m bằng riêng LiDAR đơn lẻ.
+  - *Độ an toàn vs Tài nguyên tính toán:* Không thể dựa vào một ngưỡng khoảng cách cố định; cần kết hợp mô hình Fusion đa phương thức (Camera-LiDAR Fusion như BEVFusion hoặc PointPainting) để bù đắp điểm bị thiếu từ kênh ảnh quang học 2D.
+- **Chỉ số hệ thống cần ghi log khi chạy thật:**
+  - `lidar_beam_health_ratio`: Tỷ lệ các kênh tia LiDAR có tín hiệu phản hồi hợp lệ trong 1 chu kỳ quay (phát hiện cảm biến bị che khuất một phần bởi bùn đất, tuyết).
+  - `starved_cluster_ratio`: Tỷ lệ các cụm vật thể kích thước người đi bộ bị thiếu điểm (< 10 điểm) trong bán kính cảnh báo 20 m.
+  - `cross_modal_discrepancy`: Độ chênh lệch giữa số lượng bounding box dự đoán từ 2D camera so với 3D LiDAR (phát hiện điểm mù cảm biến).
 
 ## 5. Cách chạy lại
 
@@ -67,6 +74,9 @@ python -m src.exp_degradation_sweep --data-root data/kitti_mini --frames 000001 
 
 # 3. Vẽ biểu đồ phân tích xu hướng và khoảng cách
 python -m src.plot_degradation
+
+# 4. Sinh ảnh minh hoạ Failure Case (CP4)
+python -m src.visualize_failure_case
 ```
 
 ## 6. Khai báo sử dụng AI
