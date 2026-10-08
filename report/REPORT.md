@@ -129,3 +129,6 @@ Ghi rõ đã dùng công cụ AI nào, dùng vào việc gì, và bạn đã t�
 | Công cụ | Dùng cho việc gì | Bạn đã kiểm chứng thế nào |
 |---|---|---|
 | Claude / GitHub Copilot / Antigravity | Gợi ý cấu trúc tính toán `points_in_box`, tối ưu vòng lặp sweep đa cấu hình và template vẽ đồ thị Matplotlib | Chạy tự kiểm tra ma trận hình học (`test_projection.py`), đối chiếu số điểm thực tế với visual overlay, và so sánh hash file kết quả tái lập 2 lần (`filecmp` đạt IDENTICAL) |
+
+---
+*Báo cáo hoàn thiện và kiểm thử thành công (CP5), sẵn sàng nộp bài: 08/10/2026.*
