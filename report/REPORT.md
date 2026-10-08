@@ -40,6 +40,43 @@ Dữ liệu chi tiết lưu tại `results/degradation_sweep.csv` và bảng t�
 2. **Khoảng cách khuếch đại mức độ tổn thương:** Người đi bộ ở cự ly > 14m (ví dụ frame `000011` ở 14.5m và 34.2m) chỉ có từ 35–40 điểm ở baseline; khi giảm xuống 16 beams hoặc 8 beams, số điểm rơi thẳng xuống còn 4–7 điểm (dưới ngưỡng 10 điểm), gây hiện tượng "suy sụp nhận diện" (structural collapse).
 3. **Xe con có khả năng kháng suy giảm tốt hơn:** Nhờ diện tích phản xạ lớn, ngay cả ở mức 8 beams hoặc random keep 30%, xe con vẫn giữ trung bình 49.5–113.7 điểm, ít bị ảnh hưởng nguy kịch như người đi bộ.
 
+### Mở rộng Bonus (Bằng chứng và phân tích định lượng):
+
+#### [B1] So sánh 2 cơ chế suy giảm: Beam Dropout (hạ số tia) vs Random Dropout (mất điểm ngẫu nhiên) (+4 điểm)
+
+| Tiêu chí so sánh | Beam Dropout (64 -> 16 tia, giữ 25%) | Random Dropout (keep 30% điểm) | Nhận xét phân tích |
+|---|---|---|---|
+| **Starvation Rate Người đi bộ** | **57.14%** (4/7 người bị đói điểm) | **28.57%** (2/7 người bị đói điểm) | Beam Dropout gây đói điểm gấp 2.0 lần Random Dropout |
+| **Starvation Rate Toàn bộ vật thể**| **31.82%** (14/44 vật thể) | **20.45%** (9/44 vật thể) | Mất tia làm sụp đổ hình học trên diện rộng |
+| **Cơ chế tác động** | Mất toàn bộ các lát cắt ngang (angular gap giãn rộng 4 lần) | Điểm bị mất phân tán đều khắp không gian | Random loss vẫn giữ được viền contour bao quanh thân |
+| **Failure mode riêng biệt** | Điểm bắn xuyên qua người (false negative hoàn toàn) | Mật độ thưa nhưng vẫn còn điểm định vị tâm vật thể | Beam dropout là dạng suy thoái nguy hiểm nhất cho ADAS |
+
+#### [B3] Đo Latency pipeline chuẩn xác (+2 điểm)
+- Dữ liệu lưu tại `results/latency_benchmark.csv` (21 vòng lặp liên tiếp trên frame `000011`, loại bỏ vòng 0 warmup).
+- **Phần cứng thử nghiệm:** AMD Ryzen 7 6800H with Radeon Graphics (8 cores / 16 threads), 32 GB RAM, Windows 11.
+- **Kết quả đo:**
+  - Vòng 0 (Warmup): **31.08 ms** (được loại bỏ để tránh méo mó số liệu).
+  - Độ trễ trung vị **p50: 30.24 ms** (~33.1 FPS, đáp ứng thời gian thực cho cảm biến LiDAR 10–20 Hz).
+  - Phân vị **p95: 31.24 ms**; Mean ± Std: 30.17 ± 0.98 ms (độ biến thiên cực thấp, tính ổn định cao).
+
+#### [B5] So sánh trên cả 2 dataset thật: KITTI vs nuScenes (+2 điểm)
+
+| Đặc trưng | KITTI (`data/kitti_mini`) | nuScenes (`data/nuscenes_mini_subset`) | Tác động tới độ bền vững (Robustness) |
+|---|---|---|---|
+| **Số chùm tia LiDAR** | 64 beams (Velodyne HDL-64E) | 32 beams | KITTI có mật độ tia dày hơn gấp đôi theo phương đứng |
+| **Số điểm trung bình / frame** | 119,318 điểm | 34,719 điểm | nuScenes thưa hơn 3.4 lần, ngưỡng suy sụp đến sớm hơn |
+| **Độ phân giải & FOV Camera**| 1242 × 375 (FOV ngang ~81°) | 1600 × 900 (FOV ngang ~70°) | nuScenes ảnh rộng và nét hơn, bù trừ tốt hơn cho LiDAR thưa |
+| **Điều kiện môi trường** | Ban ngày, trời quang | Ban ngày (scene-0103) & Ban đêm sau mưa (scene-1094) | nuScenes trong scene-1094 có intensity giảm, phản xạ mặt đường ẩm ướt |
+| **Ngưỡng suy sụp nhận diện** | Chịu được suy giảm đến 32 beams | Vốn ở 32 beams, nếu suy giảm thêm sẽ sụp đổ ngay ở cự ly > 10m |
+
+#### [B6] Tìm đủ các lỗi cài sẵn trong `data/synthetic` (+2 điểm)
+
+| Lỗi cài sẵn | Frame bị lỗi | Bằng chứng & Cách phát hiện (Lệnh/Số liệu) |
+|---|---|---|
+| **1. Lỗi I/O (NaN points)** | Cả 5 frame (`000000` đến `000004`) | Mỗi frame chứa đúng 66–69 điểm `NaN` (tỉ lệ 0.096% - 0.099%). Phát hiện qua `np.isnan(points).sum()` trong `starter.data_health`. |
+| **2. Lỗi Time (Timestamp gap)** | Chuyển tiếp giữa `000002` và `000003` | Trong `timestamps.txt`, timestamp nhảy từ 0.200000s lên 0.400000s ($\Delta t = 0.2\text{s}$, gấp đôi chu kỳ chuẩn 0.1s), bị mất 1 frame ở thời điểm 0.3s. |
+| **3. Lỗi Cảm biến (Sector dropout)** | Frame `000003` | Số điểm tụt xuống 22,063 điểm (mất ~1,700 điểm so với mức ~23.8k). Phân tích histogram góc azimuth phát hiện vùng góc $[-40^\circ, 0^\circ]$ phía trước-phải bị cắt mất ~70% điểm phản xạ (giả lập vật che cảm biến). |
+
 ## 3. Failure case
 
 ![failure](../results/figures/fail_01_pedestrian_starvation.png)
@@ -77,6 +114,12 @@ python -m src.plot_degradation
 
 # 4. Sinh ảnh minh hoạ Failure Case (CP4)
 python -m src.visualize_failure_case
+
+# 5. [B3] Đo latency chuẩn xác (21 lần lặp, bỏ warmup)
+python -m src.measure_latency --iterations 21
+
+# 6. [B4] Xem trợ giúp CLI tool tái sử dụng
+python -m src.exp_degradation_sweep --help
 ```
 
 ## 6. Khai báo sử dụng AI

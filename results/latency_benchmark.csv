@@ -1,0 +1,22 @@
+iteration,latency_ms,is_warmup,hardware_cpu,hardware_ram,os
+0,31.083,1,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+1,30.705,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+2,32.514,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+3,31.079,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+4,30.629,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+5,30.249,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+6,30.912,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+7,31.178,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+8,30.092,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+9,31.036,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+10,29.425,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+11,28.839,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+12,28.494,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+13,28.695,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+14,28.752,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+15,29.593,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+16,29.928,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+17,30.302,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+18,30.232,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+19,30.061,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0
+20,30.712,0,"AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",32 GB,Windows-10-10.0.26200-SP0

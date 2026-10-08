@@ -211,16 +211,37 @@ def run_experiment(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Stress test suy giảm LiDAR (Topic C)")
-    parser.add_argument("--data-root", default="data/kitti_mini")
+    parser = argparse.ArgumentParser(
+        description="Stress Test Suy Giảm Cảm Biến LiDAR & Đánh Giá Ngưỡng Suy Sụp Nhận Diện 3D (Topic C)",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--data-root",
+        default="data/kitti_mini",
+        help="Đường dẫn thư mục dataset gốc (mặc định: data/kitti_mini)",
+    )
     parser.add_argument(
         "--frames",
         nargs="+",
         default=["000001", "000010", "000011", "000021", "000049"],
+        help="Danh sách frame ID cần chạy stress test",
     )
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--out", default="results/degradation_sweep.csv")
-    parser.add_argument("--summary-out", default="results/degradation_summary.csv")
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed để đảm bảo 100% tái lập được số liệu thí nghiệm",
+    )
+    parser.add_argument(
+        "--out",
+        default="results/degradation_sweep.csv",
+        help="Đường dẫn file CSV lưu chi tiết số điểm trên từng đối tượng",
+    )
+    parser.add_argument(
+        "--summary-out",
+        default="results/degradation_summary.csv",
+        help="Đường dẫn file CSV lưu bảng tổng hợp starvation rate và mean points",
+    )
     args = parser.parse_args()
 
     print(f"=== Chạy stress test trên {len(args.frames)} frames của {args.data_root} ===")
